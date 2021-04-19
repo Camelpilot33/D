@@ -1,0 +1,64 @@
+import discord
+import os
+import random
+
+#Written in Python
+
+print("logging in...")
+client = discord.Client()
+log = []
+
+#loggin
+@client.event
+async def on_ready():
+    print('We have logged in as {0.user}'.format(client))
+
+#recieve message
+@client.event
+async def on_message(message):
+    if message.author == client.user:
+        return
+    #collect data
+    botMessage = "> " + message.author.name + ' said "' + message.content + '"'
+    print(botMessage)
+    log.append(botMessage)
+    #respond
+    txt = message.content
+    #get
+    if txt.startswith('$get'):
+      embed=discord.Embed(title="Camul Bot v1.0.0", url="https://camelpilot33.github.io/discord/CamulBot-v1_0_0.txt", color=0x0fff4b)
+      embed.add_field(name="Add bot to server: ", value="__*https://camelpilot33.github.io/discord/*__", inline=False)
+      embed.set_footer(text="bot made in python")
+      await message.channel.send(embed=embed)
+    #help
+    if txt.startswith('$help'):
+        await message.channel.send("**Help Menu:**")
+        await message.channel.send("Get this bot: $get")
+        await message.channel.send("Query commands (**$q**):")
+        await message.channel.send(
+            "1.**-logs** (brings up messages since reboot); 2.**-yn** (generates an answer for a question)"
+        )
+        txt = ""
+    if txt.startswith('$q'):
+        txt = txt[2:]
+        #log
+        if txt.startswith('-logs'):
+            await message.channel.send("**Messages since last reboot:**")
+            for i in log:
+                await message.channel.send(i)
+            txt = ""
+        #y/n
+        elif txt.startswith('-yn'):
+            txt = txt[3:]
+            if random.randint(0, 2) == 1:
+                await message.channel.send('''```YES
+                The question was: ''' + txt + '```') 
+            else:
+                await message.channel.send('''```NO
+                The question was: ''' + txt + '```')
+            
+
+
+DT = os.environ['DiscordToken']
+#environ so no token stealing
+client.run(DT)
